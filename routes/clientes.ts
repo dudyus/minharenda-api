@@ -10,7 +10,7 @@ const clienteSchema = z.object({
   totalGasto: z.number().nonnegative({ message: "Total gasto deve ser um número positivo" }),
   numCompras: z.number().int().nonnegative({ message: "Número de compras deve ser um número inteiro positivo" }),
   tagId: z.number().int({ message: "ID da tag inválido" }),
-  usuarioId: z.number().int({ message: "ID do usuário inválido" }),
+  usuarioId: z.string(),
 })
 
 router.get("/", async (req, res) => {

@@ -11,7 +11,7 @@ const despesaSchema = z.object({
   categoria: z.string().min(2,
     { message: "Nome da categoria deve possuir, no mínimo, 2 caracteres" }),
   anexo: z.string().url().optional(), // links, não especifica .png/jpg
-  usuarioId: z.number().positive({ message: "ID deve ser um valor positivo"}),
+  usuarioId: z.string(),
   tagId: z.number().positive({ message: "ID deve ser um valor positivo"}).optional(),
   fornecedorId: z.number().positive({ message: "ID deve ser um valor positivo"}),
 })

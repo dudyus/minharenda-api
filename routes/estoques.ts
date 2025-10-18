@@ -13,7 +13,7 @@ const estoqueSchema = z.object({
   valorTotal: z.number().positive({ message: "Valor total deve ser positivo"}),
   valorKG: z.number().positive({ message: "Valor do KG deve ser um valor positivo"}),
   valorGM: z.number().positive({ message: "Valor da Grama deve ser um valor positivo"}),
-  usuarioId: z.number().positive({ message: "ID deve ser um valor positivo"})
+  usuarioId: z.string()
 })
 
 router.get("/", async (req, res) => {

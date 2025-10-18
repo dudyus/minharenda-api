@@ -10,9 +10,8 @@ const usuarioSchema = z.object({
   nome: z.string().min(3, { message: "Nome deve possuir, no mínimo, 3 caracteres" }),
   email: z.string().email({ message: "E-mail inválido" }).min(10, { message: "E-mail muito curto" }),
   senha: z.string().min(6, { message: "Senha deve possuir no mínimo 6 caracteres" }),
-  celular: z.string().min(11).max(11, { message: "Celular deve conter 11 dígitos (somente números)" }),
-  admin: z.boolean(),
-  vipLevel: z.number().int().min(0, { message: "VIP level deve ser um número inteiro positivo" })
+  cpf: z.string().min(11).max(11, { message: "CPF deve conter 11 dígitos (somente números)" }),
+  celular: z.string().min(11).max(11, { message: "Celular deve conter 11 dígitos (somente números)" })
 })
 
 function validaSenha(senha: string): string[] {
@@ -54,7 +53,7 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ erro: valida.error })
   }
 
-  const { nome, email, senha, celular, admin, vipLevel } = valida.data
+  const { nome, email, senha, cpf, celular } = valida.data
 
   const errosSenha = validaSenha(senha)
   if (errosSenha.length > 0) {
@@ -70,9 +69,8 @@ router.post("/", async (req, res) => {
         nome,
         email,
         senha: senhaCriptografada,
-        celular,
-        admin,
-        vipLevel
+        cpf,
+        celular
       }
     })
     res.status(201).json(usuario)
@@ -89,7 +87,7 @@ router.put("/:id", async (req, res) => {
     return res.status(400).json({ erro: valida.error })
   }
 
-  const { nome, email, senha, celular, admin, vipLevel } = valida.data
+  const { nome, email, senha, cpf, celular } = valida.data
 
   const errosSenha = validaSenha(senha)
   if (errosSenha.length > 0) {
@@ -100,8 +98,8 @@ router.put("/:id", async (req, res) => {
 
   try {
     const usuario = await prisma.usuario.update({
-      where: { id: Number(id) },
-      data: { nome, email, senha: senhaCriptografada, celular, admin, vipLevel }
+      where: { id: id },
+      data: { nome, email, senha: senhaCriptografada, celular }
     })
     res.status(200).json(usuario)
   } catch (error) {
@@ -114,7 +112,7 @@ router.delete("/:id", async (req, res) => {
 
   try {
     const usuario = await prisma.usuario.delete({
-      where: { id: Number(id) }
+      where: { id: id }
     })
     res.status(200).json(usuario)
   } catch (error) {

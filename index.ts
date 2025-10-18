@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import routesUsuarios from './routes/usuarios'
 import routesEstoques from './routes/estoques'
 import routesDespesas from './routes/despesas'
@@ -15,6 +16,7 @@ const app = express()
 const port = 3000
 
 app.use(express.json())
+app.use(cors())
 
 app.use("/usuarios",      routesUsuarios)
 app.use("/despesas",      routesDespesas)
