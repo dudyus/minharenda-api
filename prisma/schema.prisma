@@ -9,15 +9,16 @@ datasource db {
 }
 
 model Usuario {
-    id              Int             @id @default(autoincrement())
+    id              String          @db.VarChar(36) @id @default(uuid())
     nome            String          @db.VarChar(50)
-    email           String          @db.VarChar(100)
+    email           String          @db.VarChar(100) @unique
     senha           String          @db.VarChar(60)
+    cpf             String          @db.VarChar(11)
     celular         String          @db.VarChar(11)
-    admin           Boolean 
+    admin           Boolean         @default(false)
     created_at      DateTime        @default(now()) @db.Timestamp(6)
     updated_at      DateTime        @updatedAt @db.Timestamp(6)
-    vipLevel        Int 
+    vipLevel        Int             @default(0)
     despesas        Despesa[]
     estoques        Estoque[]
     receitas        Receita[]
@@ -33,7 +34,7 @@ model Estoque {
     valorKG        Float
     valorGM        Float
     usuario        Usuario        @relation(fields: [usuarioId], references: [id])
-    usuarioId      Int  
+    usuarioId      String  
 
 
   @@map("estoques")
@@ -56,7 +57,7 @@ model Despesa {
     createdAt     DateTime       @default(now())
     updatedAt     DateTime       @updatedAt  
     usuario       Usuario        @relation(fields: [usuarioId], references: [id])
-    usuarioId     Int  
+    usuarioId     String  
     tag           Tag?            @relation(fields: [tagId], references: [id])
     tagId         Int?
     fornecedor    Fornecedor     @relation(fields: [fornecedorId], references: [id])
@@ -79,7 +80,7 @@ model Receita {
     createdAt     DateTime       @default(now())
     updatedAt     DateTime       @updatedAt  
     usuario       Usuario        @relation(fields: [usuarioId], references: [id])
-    usuarioId     Int  
+    usuarioId     String  
     tag           Tag            @relation(fields: [tagId], references: [id])
     tagId         Int
     cliente       Cliente        @relation(fields: [clienteId], references: [id])
@@ -94,7 +95,7 @@ model Cliente {
     tag             Tag             @relation(fields: [tagId], references: [id])
     tagId           Int
     usuario         Usuario         @relation(fields: [usuarioId], references: [id])
-    usuarioId       Int
+    usuarioId       String
     receitas        Receita[]
     @@map("clientes")            
 }
