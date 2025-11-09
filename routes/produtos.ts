@@ -12,10 +12,7 @@ const produtoSchema = z.object({
   unidadeBase: z.nativeEnum(Unidade),
   categoria: z.string().min(2,
     { message: "Nome da categoria deve possuir, no mínimo, 2 caracteres" }).optional(),
-  margemPadrao: z.number().optional(),
-  saldoBase: z.number().positive({ message: "Valor deve ser positivo"}),
-  custoMedio: z.number().positive({ message: "Valor deve ser positivo"}),
-  usuarioId: z.number()
+  usuarioId: z.string()
 })
 
 router.get("/", async (req, res) => {
@@ -35,11 +32,11 @@ router.post("/", async (req, res) => {
     return
   }
 
-  const { nome, unidadeBase, categoria, margemPadrao, saldoBase, custoMedio } = valida.data
+  const { nome, unidadeBase, categoria, usuarioId } = valida.data
 
   try {
     const produto = await prisma.produto.create({
-      data: { nome, unidadeBase, categoria, margemPadrao, saldoBase, custoMedio }
+      data: { nome, unidadeBase, categoria, usuarioId }
     })
     res.status(201).json(produto)
   } catch (error) {
@@ -56,12 +53,12 @@ router.put("/:id", async (req, res) => {
         return
     }
     
-    const { nome, unidadeBase, categoria, margemPadrao, saldoBase, custoMedio } = valida.data
+    const { nome, unidadeBase, categoria, usuarioId } = valida.data
     
     try {
         const produto = await prisma.produto.update({
             where: { id: Number(id) },
-            data: { nome, unidadeBase, categoria, margemPadrao, saldoBase, custoMedio }
+            data: { nome, unidadeBase, categoria, usuarioId }
         })
     res.status(200).json(produto)
 } catch (error) {

@@ -7,14 +7,15 @@ const prisma = new PrismaClient()
 const router = Router()
 
 const receitaSchema = z.object({
-    descricao: z.string().min(2,
-        { message: "Nome da descricão deve possuir, no mínimo, 2 caracteres" }),
-    valor: z.number().positive({ message: "Valor deve ser positivo"}),
-    anexo: z.string().url().optional(), // links, não especifica .png/jpg
-    categoria: z.string().min(2,
-        { message: "Nome da categoria deve possuir, no mínimo, 2 caracteres" }).optional(),
-    usuarioId: z.string(),
-    clienteId: z.number().positive({ message: "ID deve ser um valor positivo"}).optional(),
+  descricao: z.string().min(2,
+    { message: "Nome da descricão deve possuir, no mínimo, 2 caracteres" }),
+  valor: z.number().positive({ message: "Valor deve ser positivo" }),
+  categoria: z.string().min(2,
+    { message: "Nome da categoria deve possuir, no mínimo, 2 caracteres" }).optional(),
+  anexo: z.string().url().optional(), // links, não especifica .png/jpg
+  data: z.string().date(),
+  clienteId: z.number().positive({ message: "ID deve ser um valor positivo" }).optional(),
+  usuarioId: z.string(),
 })
 
 router.get("/", async (req, res) => {
@@ -36,11 +37,11 @@ router.post("/", async (req, res) => {
     return
   }
 
-  const { descricao, valor, anexo, categoria, usuarioId, clienteId } = valida.data
+  const { descricao, valor, anexo, data, categoria, usuarioId, clienteId } = valida.data
 
   try {
     const receita = await prisma.receita.create({
-      data: { descricao, valor, anexo, categoria, usuarioId, clienteId }
+      data: { descricao, valor, anexo, data, categoria, usuarioId, clienteId }
     })
     res.status(201).json(receita)
   } catch (error) {
@@ -49,25 +50,25 @@ router.post("/", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
-    const { id } = req.params
-    
-    const valida = receitaSchema.safeParse(req.body)
-    if (!valida.success) {
-        res.status(400).json({ erro: valida.error })
-        return
-    }
-    
-    const { descricao, valor, anexo, categoria, usuarioId, clienteId } = valida.data
-    
-    try {
-        const receita = await prisma.receita.update({
-            where: { id: Number(id) },
-            data: { descricao, valor, anexo, categoria, usuarioId, clienteId }
-        })
+  const { id } = req.params
+
+  const valida = receitaSchema.safeParse(req.body)
+  if (!valida.success) {
+    res.status(400).json({ erro: valida.error })
+    return
+  }
+
+  const { descricao, valor, anexo, data, categoria, usuarioId, clienteId } = valida.data
+
+  try {
+    const receita = await prisma.receita.update({
+      where: { id: Number(id) },
+      data: { descricao, valor, anexo, data, categoria, usuarioId, clienteId }
+    })
     res.status(200).json(receita)
-} catch (error) {
+  } catch (error) {
     res.status(400).json({ error })
-}
+  }
 })
 
 router.delete("/:id", async (req, res) => {

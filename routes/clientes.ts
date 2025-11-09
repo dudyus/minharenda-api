@@ -27,6 +27,24 @@ router.get("/", async (req, res) => {
   }
 })
 
+router.get("/:usuarioId", async (req, res) => {
+  const { usuarioId } = req.params
+  try {
+    const clientes = await prisma.cliente.findMany({
+      include: {
+        usuario: true,
+        receitas: true,
+      },
+      where: {
+        usuarioId: usuarioId
+      }
+    })
+    res.status(200).json(clientes)
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
+
 router.post("/", async (req, res) => {
   const valida = clienteSchema.safeParse(req.body)
   if (!valida.success) {
