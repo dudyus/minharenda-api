@@ -12,12 +12,25 @@ const despesaSchema = z.object({
   categoria: z.string().min(2,
     { message: "Nome da categoria deve possuir, no mínimo, 2 caracteres" }).optional(),
   anexo: z.string().url().optional(), // links, não especifica .png/jpg
+  data: z.coerce.date(),
   usuarioId: z.string()
 })
 
 router.get("/", async (req, res) => {
   try {
     const despesas = await prisma.despesa.findMany()
+    res.status(200).json(despesas)
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
+
+router.get("/:usuarioId", async (req, res) => {
+  const { usuarioId } = req.params
+  try {
+    const despesas = await prisma.despesa.findMany({
+      where: {usuarioId: usuarioId}
+    })
     res.status(200).json(despesas)
   } catch (error) {
     res.status(500).json({ erro: error })
@@ -32,11 +45,11 @@ router.post("/", async (req, res) => {
     return
   }
 
-  const { valor, categoria, anexo, usuarioId, descricao} = valida.data
+  const { descricao, valor, categoria, anexo, data, usuarioId} = valida.data
 
   try {
     const despesa = await prisma.despesa.create({
-      data: { valor, categoria, anexo, usuarioId, descricao }
+      data: { descricao, valor, categoria, anexo, data, usuarioId }
     })
     res.status(201).json(despesa)
   } catch (error) {
@@ -53,12 +66,12 @@ router.put("/:id", async (req, res) => {
         return
     }
     
-    const { valor, categoria, anexo, usuarioId, descricao } = valida.data
+    const { descricao, valor, categoria, anexo, data, usuarioId } = valida.data
     
     try {
         const despesa = await prisma.despesa.update({
             where: { id: Number(id) },
-            data: { valor, categoria, anexo, usuarioId, descricao }
+            data: { descricao, valor, categoria, anexo, data, usuarioId }
         })
     res.status(200).json(despesa)
 } catch (error) {
