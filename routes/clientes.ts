@@ -7,11 +7,29 @@ const router = Router()
 
 const clienteSchema = z.object({
   nome: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
-  notas: z.string().min(3, { message: "Notas deve ter no mínimo 3 caracteres" }).optional(),
-  endereco: z.string().min(3, { message: "Endereço deve ter no mínimo 3 caracteres" }).optional(),
-  telefone: z.string().optional(),
+  notas: z.string().optional().nullable(),
+  endereco: z.string().optional().nullable(),
+  telefone: z.string().optional().nullable(),
   usuarioId: z.string()
 })
+
+
+function mapClienteWithTotals(cliente: any) {
+  const receitas = Array.isArray(cliente.receitas) ? cliente.receitas : []
+
+  const totalGasto = receitas.reduce((sum: number, r: any) => {
+    const valor = r.valorTotal ?? r.valor ?? 0
+    return sum + Number(valor)
+  }, 0)
+
+  const totalCompras = receitas.length
+
+  return {
+    ...cliente,
+    totalGasto,
+    totalCompras,
+  }
+}
 
 router.get("/", async (req, res) => {
   try {
@@ -21,7 +39,10 @@ router.get("/", async (req, res) => {
         receitas: true,
       }
     })
-    res.status(200).json(clientes)
+
+    const clientesComTotais = clientes.map(mapClienteWithTotals)
+
+    res.status(200).json(clientesComTotais)
   } catch (error) {
     res.status(500).json({ erro: error })
   }
@@ -39,7 +60,10 @@ router.get("/:usuarioId", async (req, res) => {
         usuarioId: usuarioId
       }
     })
-    res.status(200).json(clientes)
+
+    const clientesComTotais = clientes.map(mapClienteWithTotals)
+
+    res.status(200).json(clientesComTotais)
   } catch (error) {
     res.status(500).json({ erro: error })
   }
@@ -76,9 +100,16 @@ router.put("/:id", async (req, res) => {
   try {
     const cliente = await prisma.cliente.update({
       where: { id: Number(id) },
-      data: { nome, notas, endereco, telefone, usuarioId }
+      data: { nome, notas, endereco, telefone, usuarioId },
+      include: {
+        usuario: true,
+        receitas: true,
+      }
     })
-    res.status(200).json(cliente)
+
+    const clienteComTotais = mapClienteWithTotals(cliente)
+
+    res.status(200).json(clienteComTotais)
   } catch (error) {
     res.status(400).json({ erro: error })
   }
