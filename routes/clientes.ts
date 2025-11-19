@@ -30,7 +30,6 @@ function clienteInfosAdicionais(cliente: any) {
   }
 }
 
-
 router.get("/", async (req, res) => {
   try {
     const clientes = await prisma.cliente.findMany({
